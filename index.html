@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Changelog Plugin</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/vendors/bootstrap.css">
+</head>
+<body>
+    
+        <script type="text/x-handlebars" data-template-name="application">
+            <div class="container">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="dropdown">
+                        </div>
+                        <h2 class="align-center">Xlogger v1.0 - by Gray Junior</h2>
+                    </div>
+                </div>
+                <div class="row content-wrapper">
+                    {{outlet}}
+                </div><!-- end of .content-wrapper -->
+            </div><!-- end of .container -->
+        </script>
+
+        <script type="text/x-handlebars" id="notification">
+            <div class="notification-wrapper">
+                <div class="alert alert-danger">
+                    <h5 class="pull-left">
+                        {{notification_message}}
+                        {{#if notification_url}}
+                            <a {{bind-attr href=notification_url}}>here</a>
+                        {{/if}}
+                    </h5>
+                    <button class="pull-right btn btn-danger" data-dismiss="alert" aria-hidden="true" {{action 'closeNotification'}}>Close</button>
+                    <div class="clearfix"></div>
+                </div>
+            </div><!-- end of .notification-wrapper -->
+        </script>
+
+
+
+        <script type="text/x-handlebars" id="loginPanel">
+            <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Please log in first.</h4>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-success btn" data-dismiss="modal" {{action 'onLoggingIn'}}>Log in</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+
+
+        <script type="text/x-handlebars" id="loadingPanel">
+            <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Please wait while we load.</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h4>Loading...</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+
+
+        <script type="text/x-handlebars" id="modalDialog">
+            <div class="modal fade" id="dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" {{action 'onCancelChanges'}}>&times;</button>
+                          <h4 class="modal-title">{{dialog.dialog-title}}</h4>
+                        </div><!-- end of .modal-header -->
+
+                        {{#if isEditingLog}}
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="edit-logTitle">Log Title</label>
+                                    {{view Em.TextField id="edit-logTitle" class="form-control" placeholder="Enter your log title" value=selectedLog.title}}
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-logDescription">Log Description</label>
+                                    {{view Em.TextArea id="edit-logDescription" class="form-control" placeholder="Enter your log description" value=selectedLog.post}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Date Created</label>
+                                    {{view Ember.Select content=days prompt="Please select a day" value=selectedLog.postDateDay}}
+                                    {{view Ember.Select content=months prompt="Please select a month" value=selectedLog.postDateMonth}}
+                                    {{view Ember.Select content=years prompt="Please select a year" value=selectedLog.postDateYear}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Log Difficulty Points</label>
+                                    {{view Ember.Select content=points prompt="Please select difficulty" id="edit-points" value=selectedLog.points.val}}
+                                </div>
+                                <div class="form-group">
+                                    <label>Log Author</label>
+                                    {{view Ember.Select content=authors prompt="Please select an author" id="edit-author" value=selectedLog.author}}
+                                </div>
+                                <div class="form-group">
+                                    <label>Log to be Handled By</label>
+                                    {{view Ember.Select content=handlers prompt="Please select a handler" id="edit-handler" value=selectedLog.handledBy}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit-logNotes">Log Notes</label>
+                                    {{textarea type="text" id="edit-logNotes" rows="10" class="form-control" id="edit-logNotes" placeholder="Enter your log notes" value=selectedLog.notes}}
+                                </div>
+                            </div><!-- end of .modal-body -->
+
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-success" data-dismiss="modal" {{action 'onConfirmChanges'}}>Save</button>
+                            </div><!-- end of .modal-footer -->
+                        {{else}}
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="edit-logTitle">Log Title</label>
+                                    {{input type="text" class="form-control" placeholder="Enter your log title" valueBinding="title"}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit-logDescription">Log Description</label>
+                                    {{textarea type="text" class="form-control" placeholder="Enter your log title" valueBinding="post"}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Date Created</label>
+                                    {{view Ember.Select content=days prompt="Please select a day" valueBinding="logDays"}}
+                                    {{view Ember.Select content=months prompt="Please select a month" valueBinding="logMonths"}}
+                                    {{view Ember.Select content=years prompt="Please select a year" valueBinding="logYear"}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Log Difficulty Points</label>
+                                    {{view Ember.Select content=points prompt="Please select difficulty" valueBinding="pointsValue"}}
+                                </div>
+                                <div class="form-group">
+                                    <label>Log Author</label>
+                                    {{view Ember.Select content=authors prompt="Please select an author" valueBinding="author"}}
+                                </div>
+                                <div class="form-group">
+                                    <label>Log to be Handled By</label>
+                                    {{view Ember.Select content=handlers prompt="Please select an author" valueBinding="handledBy"}}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit-logNotes">Log Notes</label>
+                                    {{textarea type="text" rows="10" class="form-control" placeholder="Enter your log notes" valueBinding="notes"}}
+                                </div>
+                            </div><!-- end of .modal-body -->
+
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-primary" data-dismiss="modal" {{action 'onConfirmChanges' this}}>Done</button>
+                            </div><!-- end of .modal-footer -->
+                        {{/if}}
+
+
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </script>
+
+
+
+        <script type="text/x-handlebars" id="index">
+            <div class="row user-action-bar-wrapper">
+                <div class="user-action-bar">
+                    {{#if isLoggedIn}}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>{{#link-to 'how-to-use'}}Documentation{{/link-to}}</li>
+                            <li>{{#link-to 'about'}}About Us{{/link-to}}</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-default" href="#/"{{action 'onLogOut'}}>Logout</button>
+                    {{else}}
+                    <button class="btn btn-default" data-toggle="modal" data-target="#login" href="#/"{{action 'onLogIn'}}>Login</button>
+                    {{/if}}
+                </div>
+            </div>
+            <p class="align-center plugin-description">What Xlogger does is basically allowing you to do development tracking easily. Powered by emberJS, it allows quick edits, live preview and real-time update. Check out the manual {{#link-to 'how-to-use'}}How to Use Xlogger{{/link-to}} to get a deeper understanding of its features.</p>
+
+            <div class="container sticky-top-notification">
+                {{#if hasNotification}}
+                    {{partial 'notification'}}
+                {{/if}}
+            </div>
+
+            {{partial 'loadingPanel'}}
+
+            {{#unless isLoggedIn}}
+                {{partial 'loginPanel'}}
+            {{/unless}}
+
+            {{#if onShowDialog}}
+                {{partial 'modalDialog'}}
+            {{/if}}
+
+            <div class="progress-tracker">
+                <h4>Overall Progress Tracker</h4>
+                    <div class="progress progress-striped">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
+                            70% completed
+                            <span class="sr-only">70% Complete</span>
+                        </div>
+                    </div><!-- end of .progress-striped -->
+            </div><!-- end of .progress-tracker -->
+
+            <div class="global-controls">
+                <div class="pull-left">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
+                            Filter
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#/">Something</a><li>
+                            <li><a href="#/">Something else</a><li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#dialog" {{action 'onAddNewLog'}}>Add</button>
+                </div>
+                <div class="clearfix"></div>
+            </div><!-- end of .global-controls -->
+
+            <div class="logs-list container">
+                {{#each content}}
+                <div class="log-post" {{bind-attr id=id}}>
+                    <div class="btn-group log-actions">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          actions
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#/" data-toggle="modal" data-target="#dialog" {{action 'onEditExistingLog' this}}>edit</a></li>
+                            <li><a href="#">accept</a></li>
+                            <li>{{#link-to 'notification'}}delete{{/link-to}}</li>
+                            <li><a href="#">reject</a></li>
+                        </ul>
+                    </div><!-- end of .btn-group -->
+
+                    {{#link-to 'post' this}}<h4>{{title}}</h4>{{/link-to}}
+
+                    <h5 class="subtitle">
+                        {{postDateDay}} {{postDateMonth}} {{postDateYear}}, by {{author}}
+                        <span class="badge">3 comments</span>
+                    </h5><!-- end of .subtitle -->
+
+                    <div class="progress">
+                        <div {{bind-attr class="points.code" style="points.style"}} role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
+                          {{points.val}}/10 difficulty
+                          <span class="sr-only">80% Complete</span>
+                        </div>
+                    </div><!-- end of .progress -->
+
+                    <div class="flags-tags-container">
+                        <span class="flag-ico ico">{{flag}}</span>
+                        {{#each tags}}
+                        <span class="tag-ico ico">{{this}}</span>
+                        {{/each}}
+                    </div><!-- end of .tags-container -->
+
+                    <p>{{post}}</p>
+
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">Important Notes!</div>
+                        <div class="panel-body">{{notes}}</div>
+                    </div><!-- end of .panel-danger -->
+
+                    <div class="comments-container">
+                        {{#each comments}}
+                        <h5>{{author}} on {{commentdate}}</h5>
+                        <div class="well well-sm">{{body}}</div>
+                        {{/each}}
+                    </div><!-- end of .comments-container -->
+                </div><!-- end of .log-post -->
+                {{/each}}
+            </div><!-- end of .log-list -->
+            <div id="footer" class="footer-wrapper">
+                <div class="disclaimer">
+                    Copyright &copy; 2014.
+                    {{#link-to 'about'}}About Us{{/link-to}}
+                </div>
+            </div>
+        </script>
+
+        <script type="text/x-handlebars" id="how-to-use">
+            <div class="container">
+                <h2>How to Use Xlogger</h2>
+                <p>A sample of the API manual. Type something here.</p>
+                {{#link-to 'index'}}Back to home{{/link-to}}
+            </div>
+        </script>
+
+        <script type="text/x-handlebars" id="about">
+            <div class="container">
+                <h2>About Us</h2>
+                <p>Hello world man!</p>
+                {{#link-to 'index'}}Back to home{{/link-to}}
+            </div>
+        </script>
+
+        <script type="text/x-handlebars" id="post">
+            {{outlet}}
+        </script>
+
+        <script type="text/x-handlebars" id="post/comment">
+            <h2>Hello {{content.id}}</h2>
+        </script>
+
+        <script type="text/x-handlebars" id="post/index">
+            <div class="logs-list container">
+                <div class="log-post" {{bind-attr id=id}}>
+                    <div class="btn-group log-actions">
+                        {{#link-to 'post.comment'}}comments{{/link-to}}
+                    </div><!-- end of .btn-group -->
+
+                    <h4>{{content.title}}</h4>
+
+                    <h5 class="subtitle">
+                        {{content.postDateDay}} {{content.postDateMonth}} {{postDateYear}}, by {{author}}
+                        <span class="badge">3 comments</span>
+                    </h5><!-- end of .subtitle -->
+
+                    <div class="progress">
+                        <div {{bind-attr class="points.code" style="points.style"}} role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
+                          {{points.val}}/10 difficulty
+                          <span class="sr-only">80% Complete</span>
+                        </div>
+                    </div><!-- end of .progress -->
+
+                    <div class="flags-tags-container">
+                        <span class="flag-ico ico">{{flag}}</span>
+                        {{#each tags}}
+                        <span class="tag-ico ico">{{this}}</span>
+                        {{/each}}
+                    </div><!-- end of .tags-container -->
+
+                    <p>{{post}}</p>
+
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">Important Notes!</div>
+                        <div class="panel-body">{{notes}}</div>
+                    </div><!-- end of .panel-danger -->
+
+                    <div class="comments-container">
+                        {{#each comments}}
+                        {{#link-to 'comment' this}}<h5>{{author}} on {{commentdate}}</h5>{{/link-to}}
+                        <div class="well well-sm">{{body}}</div>
+                        {{/each}}
+                    </div><!-- end of .comments-container -->
+                </div><!-- end of .log-post -->
+            </div><!-- end of .log-list -->
+        </script>
+
+
+    <script src="js/libs/jquery-1.10.2.js"></script>
+    <script src="js/libs/handlebars-1.1.2.js"></script>
+    <script src="js/libs/ember-1.4.0.js"></script>
+    <script src="js/libs/bootstrap.js"></script>
+    <script src="js/app.js"></script>
+    <!-- to activate the test runner, add the "?test" query string parameter -->
+    <script src="tests/runner.js"></script>
+</body>
+</html>

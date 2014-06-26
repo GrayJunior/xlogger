@@ -1,0 +1,142 @@
+/* global styles and classes */
+.body, html {
+    font-size: 14px;
+    color: #444;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.ember-application {
+    margin: 20px;
+}
+
+.progress-tracker {
+}
+
+.progress-tracker h4 {
+    text-align: center;
+}
+
+.content-wrapper {
+}
+
+.notification-wrapper {
+    margin: 50px 0;
+}
+
+.global-controls {
+    margin: 50px 0;
+}
+
+.user-action-bar-wrapper {
+    position: relative;
+}
+
+.user-action-bar-wrapper .user-action-bar {
+    position: absolute;
+    top: -60px;
+    right: 15px;
+}
+
+/*plugin description and header*/
+.plugin-description {
+    
+}
+
+.sticky-top-notification {
+    position: fixed;
+    top: 30px;
+    z-index: 10;
+}
+
+.sticky-top-notification .alert {
+    box-shadow: 1px 1px 10px #bbb;
+}
+
+/*log contents and posts*/
+.log-post {
+    position: relative;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #fefefe;
+    border: 1px solid #eee;
+}
+
+.log-post .log-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.log-post h4 {
+}
+
+.log-post .subtitle {
+    font-style: italic;
+    color: #aaa;
+}
+
+.log-post .progress {
+    width: 300px;
+}
+
+.log-post .points-indicator {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+}
+
+.log-post .points-indicator.green {
+    color: green;
+}
+
+.log-post .points-indicator.yellow {
+    color: yellow;
+}
+
+.log-post .points-indicator.red {
+    color: red;
+}
+
+.log-post .flags-tags-container {
+    margin-bottom: 20px;
+}
+
+.log-post .flags-tags-container .ico {
+    display: inline-block;
+    margin: 0 1px;
+    padding: 2px 5px;
+    font-size: 12px;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.log-post .flags-tags-container .flag-ico {
+    border: 1px solid #b4f7f7;
+    background-color: #dbfcfc;
+}
+
+.log-post .flags-tags-container .tag-ico {
+    border: 1px solid #ddd;
+    background-color: #eee;
+}
+
+.log-post p {
+    line-height: 1.5em;
+}
+
+.log-post .comments-container {
+    margin-top: 50px;
+}
